@@ -174,10 +174,12 @@ def schedule_download():
 class IA_Monitoring:
     def __init__(self, api_key=None):
         """Initialize with Groq API client."""
-        # Use environment variable or default key for testing
+        # Use environment variable only (no default key for security)
         if api_key is None:
             import os
-            api_key = os.getenv('GROQ_API_KEY', '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')
+            api_key = os.getenv('GROQ_API_KEY')
+            if not api_key:
+                raise ValueError("GROQ_API_KEY environment variable is required")
         """Initialize with Groq API client."""
         self.groq_client = Groq(api_key=api_key)
         self.model = "llama-3.1-8b-instant"
