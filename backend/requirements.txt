@@ -1,0 +1,8 @@
+pandas
+requests
+schedule
+openpyxl
+groq
+pyinstaller
+numpy
+python-dateutil 

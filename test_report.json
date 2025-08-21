@@ -1,0 +1,177 @@
+{
+  "timestamp": "2025-07-12 12:27:24",
+  "platform": "Windows",
+  "python_version": "Python 3.12.3",
+  "node_version": "v22.13.1",
+  "total_tests": 33,
+  "passed": 32,
+  "failed": 1,
+  "success_rate": 96.96969696969697,
+  "results": [
+    [
+      "Python Installation",
+      true,
+      "Found: Python 3.12.3"
+    ],
+    [
+      "Node.js Installation",
+      true,
+      "Found: v22.13.1"
+    ],
+    [
+      "npm Installation",
+      true,
+      "Found: 10.9.2"
+    ],
+    [
+      "pip Installation",
+      true,
+      "Found: pip 25.1.1 from C:\\Users\\jerwa\\PycharmProjects\\DiamondsSearch\\.venv\\Lib\\site-packages\\pip (python 3.12)"
+    ],
+    [
+      "File exists: package.json",
+      true,
+      ""
+    ],
+    [
+      "File exists: main.js",
+      true,
+      ""
+    ],
+    [
+      "File exists: bot.js",
+      true,
+      ""
+    ],
+    [
+      "File exists: format-results.js",
+      true,
+      ""
+    ],
+    [
+      "File exists: frontend/index.html",
+      true,
+      ""
+    ],
+    [
+      "File exists: backend/back_main.py",
+      true,
+      ""
+    ],
+    [
+      "File exists: backend/requirements.txt",
+      true,
+      ""
+    ],
+    [
+      "File exists: backend/setup_ollama.py",
+      true,
+      ""
+    ],
+    [
+      "Install requirements.txt",
+      true,
+      ""
+    ],
+    [
+      "Import pandas",
+      true,
+      ""
+    ],
+    [
+      "Import requests",
+      true,
+      ""
+    ],
+    [
+      "Import schedule",
+      true,
+      ""
+    ],
+    [
+      "Import openpyxl",
+      true,
+      ""
+    ],
+    [
+      "Import ollama",
+      true,
+      ""
+    ],
+    [
+      "Import numpy",
+      true,
+      ""
+    ],
+    [
+      "Ollama Installation",
+      true,
+      "Found: ollama version is 0.9.3"
+    ],
+    [
+      "llama3:latest Model",
+      true,
+      "Already installed"
+    ],
+    [
+      "Model Functionality",
+      false,
+      "Model not responding"
+    ],
+    [
+      "Install npm dependencies",
+      true,
+      ""
+    ],
+    [
+      "node_modules directory",
+      true,
+      ""
+    ],
+    [
+      "Critical dependencies",
+      true,
+      "All required dependencies found"
+    ],
+    [
+      "Backend Import",
+      true,
+      ""
+    ],
+    [
+      "Backend Processing",
+      true,
+      "Backend processes messages correctly"
+    ],
+    [
+      "Database Functions",
+      true,
+      ""
+    ],
+    [
+      "main.js Syntax",
+      true,
+      ""
+    ],
+    [
+      "bot.js Syntax",
+      true,
+      ""
+    ],
+    [
+      "setup_ollama.py Syntax",
+      true,
+      ""
+    ],
+    [
+      "setup_ollama.bat",
+      true,
+      "Batch file exists"
+    ],
+    [
+      "setup_ollama.sh",
+      true,
+      "Not required on this platform"
+    ]
+  ]
+}

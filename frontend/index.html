@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>WhatsApp Bot Controller</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #075e54;
+        }
+        .buttons {
+            margin: 30px 0;
+        }
+        button {
+            padding: 12px 24px;
+            margin: 0 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        #startBtn {
+            background-color: #25d366;
+            color: white;
+        }
+        #stopBtn {
+            background-color: #ff5252;
+            color: white;
+        }
+        #startBtn:hover {
+            background-color: #128c7e;
+        }
+        #stopBtn:hover {
+            background-color: #d32f2f;
+        }
+        #status {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        #qrCode {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .group-section {
+            margin-top: 30px;
+            text-align: left;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+        }
+        .group-list {
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .group-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            margin-bottom: 5px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+        }
+        .delete-btn {
+            background-color: #ff5252;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .add-group-form {
+            display: flex;
+            margin-top: 15px;
+        }
+        #newGroupInput {
+            flex-grow: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        #addGroupBtn {
+            background-color: #25d366;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 15px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Contrôleur de Bot WhatsApp</h1>
+        <div class="buttons">
+            <button id="startBtn">Démarrer</button>
+            <button id="stopBtn">Arrêter</button>
+        </div>
+        <div id="status">État: Arrêté</div>
+        <div id="qrCode"></div>
+
+        <div class="group-section">
+            <h2>Gestion des Groupes</h2>
+            <div class="add-group-form">
+                <input type="text" id="newGroupInput" placeholder="Nom du groupe">
+                <button id="addGroupBtn">Ajouter</button>
+            </div>
+            <div class="group-list" id="groupList">
+                <!-- Les groupes seront ajoutés ici dynamiquement -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+
+        // Variable pour suivre l'état du bot
+        let botState = 'stopped'; // États possibles: 'stopped', 'loading', 'ready'
+
+        // Fonctions pour le contrôle du bot
+        document.getElementById('startBtn').addEventListener('click', () => {
+            // Ne rien faire si le bot est déjà actif
+            if (botState === 'ready') {
+                return;
+            }
+            ipcRenderer.send('start-bot');
+            document.getElementById('status').textContent = 'État: Chargement...';
+            document.getElementById('status').style.backgroundColor = '#ffab40'; // Orange color for loading state
+            botState = 'loading';
+        });
+
+        document.getElementById('stopBtn').addEventListener('click', () => {
+            // Ne rien faire si le bot est déjà arrêté
+            if (botState === 'stopped') {
+                return;
+            }
+            ipcRenderer.send('stop-bot');
+            document.getElementById('status').textContent = 'État: Arrêt...';
+            document.getElementById('status').style.backgroundColor = '#ffebee';
+            botState = 'stopping';
+        });
+
+        ipcRenderer.on('bot-started', (event, success) => {
+            if (success) {
+                document.getElementById('status').textContent = 'État: Chargement...';
+                document.getElementById('status').style.backgroundColor = '#ffab40'; // Orange color for loading state
+                botState = 'loading';
+            }
+        });
+
+        ipcRenderer.on('qr-code', (event, qr) => {
+            document.getElementById('status').textContent = 'État: Veuillez scanner le QR code';
+            document.getElementById('status').style.backgroundColor = '#ffab40'; // Orange color for loading state
+            botState = 'loading';
+            const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(qr)}&size=200x200`;
+            const whatsappUrl = `https://wa.me/qr/${encodeURIComponent(qr)}`;
+
+            document.getElementById('qrCode').innerHTML = `
+                <p>Scannez ce QR code avec WhatsApp sur votre téléphone</p>
+                <img src="${qrCodeUrl}" alt="QR Code">
+                <p style="margin-top: 15px;">Si le QR code ne s'affiche pas correctement:</p>
+                <p><a href="${qrCodeUrl}" target="_blank">Cliquez ici pour ouvrir le QR code dans un nouvel onglet</a></p>
+                <p><a href="${whatsappUrl}" target="_blank">Ou cliquez ici pour ouvrir directement dans WhatsApp</a></p>
+            `;
+        });
+
+        ipcRenderer.on('bot-ready', () => {
+            document.getElementById('status').textContent = 'État: Bot actif et connecté';
+            document.getElementById('status').style.backgroundColor = '#e8f5e9';
+            document.getElementById('qrCode').innerHTML = '';
+            botState = 'ready';
+        });
+
+        ipcRenderer.on('bot-stopped', (event, success) => {
+            if (success) {
+                document.getElementById('status').textContent = 'État: Arrêté';
+                document.getElementById('status').style.backgroundColor = '#f5f5f5';
+                document.getElementById('qrCode').innerHTML = '';
+                botState = 'stopped';
+            }
+        });
+
+        // Fonctions pour la gestion des groupes
+        // Charger la liste des groupes au démarrage
+        window.addEventListener('DOMContentLoaded', () => {
+            ipcRenderer.send('get-groups');
+        });
+
+        // Ajouter un groupe
+        document.getElementById('addGroupBtn').addEventListener('click', () => {
+            const groupName = document.getElementById('newGroupInput').value;
+            if (groupName.trim() !== '') {
+                ipcRenderer.send('add-group', groupName);
+                document.getElementById('newGroupInput').value = ''; // Vider le champ
+            }
+        });
+
+        // Permettre l'ajout en appuyant sur Entrée
+        document.getElementById('newGroupInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('addGroupBtn').click();
+            }
+        });
+
+        // Recevoir et afficher la liste des groupes
+        ipcRenderer.on('groups-list', (event, groups) => {
+            const groupList = document.getElementById('groupList');
+            groupList.innerHTML = ''; // Vider la liste actuelle
+
+            if (groups.length === 0) {
+                groupList.innerHTML = '<p>Aucun groupe configuré</p>';
+                return;
+            }
+
+            groups.forEach(group => {
+                const groupItem = document.createElement('div');
+                groupItem.className = 'group-item';
+
+                const groupName = document.createElement('span');
+                groupName.textContent = group;
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-btn';
+                deleteBtn.textContent = 'Supprimer';
+                deleteBtn.onclick = () => {
+                    ipcRenderer.send('remove-group', group);
+                };
+
+                groupItem.appendChild(groupName);
+                groupItem.appendChild(deleteBtn);
+                groupList.appendChild(groupItem);
+            });
+        });
+
+        // Notifications pour les actions sur les groupes
+        ipcRenderer.on('group-added', (event, success) => {
+            if (!success) {
+                alert('Erreur: Impossible d\'ajouter ce groupe');
+            }
+        });
+
+        ipcRenderer.on('group-removed', (event, success) => {
+            if (!success) {
+                alert('Erreur: Impossible de supprimer ce groupe');
+            }
+        });
+    </script>
+</body>
+</html>

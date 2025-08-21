@@ -1,0 +1,63 @@
+name: Build macOS App
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r backend/requirements.txt
+        pip install pyinstaller
+    
+    - name: Install Node.js dependencies
+      run: npm install
+    
+    - name: Build Python executable
+      env:
+        GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      run: |
+        cd backend
+        pyinstaller --onefile back_main.py
+        ls -la dist/
+    
+    - name: Build Electron app
+      run: |
+        npm run build
+        ls -la dist/
+    
+    - name: Upload macOS artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: macOS-DiamondsSearch-App
+        path: |
+          dist/
+          backend/dist/
+        retention-days: 30
+    
+    - name: Show build results
+      run: |
+        echo "=== Build completed successfully ==="
+        echo "Artifacts available for download:"
+        ls -la dist/ || echo "No dist folder found"
+        ls -la backend/dist/ || echo "No backend/dist folder found"
