@@ -177,7 +177,7 @@ class IA_Monitoring:
         # Use environment variable or default key for testing
         if api_key is None:
             import os
-            api_key = os.getenv('GROQ_API_KEY', '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')
+            api_key = os.getenv('GROQ_API_KEY', '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')
         """Initialize with Groq API client."""
         self.groq_client = Groq(api_key=api_key)
         self.model = "llama-3.1-8b-instant"

@@ -45,6 +45,8 @@ jobs:
       run: |
         npm run build
         ls -la dist/
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
     - name: Upload macOS artifacts
       uses: actions/upload-artifact@v4
